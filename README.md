@@ -12,6 +12,16 @@ Upload a file or record from the mic, pick one of 14 languages, and get the text
 back with SRT and VTT exports. Toggles control punctuation and casing, and
 whether silence is trimmed with VAD.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/result-dark.png">
+  <img src="docs/screenshots/result-light.png" width="1920" alt="The app after a transcription. Sidebar: language, punctuation and VAD controls. Left column: the uploaded gettysburg.mp3 with a player, the Transcribe button, a Done in 1.8s status, metrics reading Audio 1:20, Elapsed 1.5s and Speed 54×, Text, SRT and VTT download buttons, and a collapsed 3 chunks table. Right column: the full transcript.">
+</picture>
+
+The Gettysburg Address, synthesized with macOS `say` into an 80-second MP3 and
+transcribed with the model already resident. Captured at 1920×839 — a 1080p
+display with the sidebar open — in the dark and light themes
+`.streamlit/config.toml` defines; GitHub shows whichever matches yours.
+
 ## Setup
 
 ```bash
@@ -137,6 +147,14 @@ These are model limits, not missing features in this app:
   will hallucinate text over background noise. The VAD toggle fixes this on
   audio with real silences, at the cost of accuracy on dense narration — hence
   off by default.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/chunks-dark.png">
+  <img src="docs/screenshots/chunks-light.png" width="632" alt="The chunk table for the same recording, open: three rows spanning 0.0 to 30.0 s, 30.0 to 61.4 s and 61.4 to 80.2 s, each with the text decoded from that span.">
+</picture>
+
+The chunk table for the recording above: three cues, cut where long-form
+decoding cut the audio, which is exactly what the SRT and VTT files carry.
 
 ## Known upstream issues
 

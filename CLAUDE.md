@@ -355,6 +355,8 @@ tests/test_smoke.py        sentencepiece is installed; streamlit_app.py renders 
                            under AppTest; config.toml keeps its rules
 .streamlit/config.toml     the 1000 MB upload ceiling, loopback bind, usage stats off,
                            [theme.dark], a two-key [theme.light]
+docs/screenshots/          the four PNGs README.md embeds in two <picture> pairs; captures of
+                           the live app, not mockups — see Screenshots below
 ```
 
 Flow: `UploadedFile` (or `st.audio_input`) → `decode_to_mono16k` → flat `np.float32` array at 16 kHz +
@@ -673,6 +675,50 @@ Each of these looks like a mistake and is not. Comments in the source carry the 
   monkeypatching `st.set_page_config` and asserts the icon passes Streamlit's own `is_emoji` gate —
   a negative check on the `:material/` prefix let a URL through. The comment on
   `st.set_page_config` carries it.
+
+## Screenshots
+
+`docs/screenshots/` holds four captures of the running app, embedded in README.md as two
+`<picture>` pairs so GitHub serves the half matching the reader's colour scheme. Any commit that
+touches the UI or the theme dates them — recapture rather than edit, and re-read every number in
+the README alt text off the new capture: Elapsed and Speed move on every run, and the first
+version of that alt text shipped the numbers from the run before the one on disk.
+
+- **Fixture.** The Bliss copy of the Gettysburg Address, public domain, rendered with
+  `say -v Samantha -f gettysburg.txt -o gettysburg.aiff` and encoded with
+  `ffmpeg -i gettysburg.aiff -codec:a libmp3lame -q:a 4 gettysburg.mp3`: 80.3 s, 0.6 MB, three
+  long-form chunks cut at 30.0 and 61.4 s. `-v` is stated because the default voice is a per-user
+  setting — this machine's is Albert, which renders the same text at 88.4 s and moves every cut.
+  `-q:a 4` because the file size is on screen in the uploader chip. The name is on screen twice,
+  and it is short because the chip ellipsises `gettysburg-address.mp3`. The audio is not
+  committed: a minute to regenerate, and it is Apple's voice, not ours to distribute.
+- **Geometry.** A 1920×839 viewport at 1×: `window.innerHeight` measured in Chrome on the
+  1920×1080 panel the layout was tuned for, with the menu bar and Dock showing (`availHeight`
+  960, less 121 px of tab strip, toolbar and bookmarks bar). Measured, not derived — an earlier
+  draft of this note summed 1080 − 121 − 25 and got a number that matched nothing. Sidebar open.
+- **Capture.** Playwright driving the app — already running with `--server.headless true` — in
+  headless Chromium: `uv run --no-project --with playwright python <script>`, never a project
+  dependency, since ty would report the import unresolved and nothing here imports it.
+  `set_input_files` on the uploader, click Transcribe, then wait for three `stMetric` elements
+  and fail fast on the three error labels — "RTFx" is only in the Speed tooltip, so waiting on
+  it hangs. Before every shot: wait for `stStatusWidget` to detach, blur `activeElement`, and
+  park the mouse in empty main-area background; otherwise Transcribe is captured in its hover
+  tone and the sidebar shows its collapse chevron. `result-*` are the viewport. `chunks-*` are
+  the open chunk expander, which sits below the fold with the main pane scrolling internally
+  (`full_page` is a no-op there), selected by `filter(has_text="chunks")` — `.first` is the
+  sidebar's Advanced expander. They are rasterised at 2× through CDP `Page.captureScreenshot`
+  with `clip.scale`, because the README embeds them at their CSS width and most readers of an
+  Apple-Silicon-only app are on Retina displays, where a 1× raster goes soft beside the page
+  text; Playwright re-applies the context's own device metrics before each of its captures, so
+  a device-metrics override is undone and `scale="device"` stays 1×. The hero pair needs none
+  of that: GitHub clamps a 1920-wide image to its content column, a downscale even at 2×.
+- **Dark and light come from one session.** `page.emulate_media(color_scheme=…)` between the
+  two shots — Streamlit's "System" theme follows a live `prefers-color-scheme` change — so both
+  halves carry one transcript and one set of numbers. A second context is a second session and a
+  second transcription, which is how the first pair came out reading 40× and 52×.
+- **Two routes that do not work here.** `screencapture` fails with "could not create image":
+  the terminal has no Screen Recording permission, sandbox on or off. The Chrome extension's
+  saved screenshot is a 1568-px-wide JPEG, not the viewport.
 
 ## Model limits — not missing features
 
