@@ -212,6 +212,7 @@ verify_transcription.py    integration test against known ground truth
 tests/test_pure.py         unit tests for the pure functions — no model needed
 tests/test_smoke.py        sentencepiece is installed; the app renders and its
                            rules hold under AppTest; config.toml keeps its rules
+docs/screenshots.py        regenerates the screenshots above from the running app
 ```
 
 ## License

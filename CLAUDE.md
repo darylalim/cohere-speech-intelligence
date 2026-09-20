@@ -355,6 +355,8 @@ tests/test_smoke.py        sentencepiece is installed; streamlit_app.py renders 
                            under AppTest; config.toml keeps its rules
 .streamlit/config.toml     the 1000 MB upload ceiling, loopback bind, usage stats off,
                            [theme.dark], a two-key [theme.light]
+docs/screenshots.py        regenerates the four PNGs below from the running app; Playwright
+                           from inline script metadata, never a project dependency
 docs/screenshots/          the four PNGs README.md embeds in two <picture> pairs; captures of
                            the live app, not mockups — see Screenshots below
 ```
@@ -680,9 +682,12 @@ Each of these looks like a mistake and is not. Comments in the source carry the 
 
 `docs/screenshots/` holds four captures of the running app, embedded in README.md as two
 `<picture>` pairs so GitHub serves the half matching the reader's colour scheme. Any commit that
-touches the UI or the theme dates them — recapture rather than edit, and re-read every number in
-the README alt text off the new capture: Elapsed and Speed move on every run, and the first
-version of that alt text shipped the numbers from the run before the one on disk.
+touches the UI or the theme dates them — recapture with `docs/screenshots.py` rather than edit,
+and re-read every number in the README alt text off the new capture: Elapsed and Speed move on
+every run, and the first version of that alt text shipped the numbers from the run before the one
+on disk. A re-run reproduces the chunk crops byte for byte and the hero pair everywhere except
+the `Done in` wall clock, the Speed digits and the player's buffered-range shading (measured
+with a pixel diff), so a diff against the committed files is the check that the recipe still holds.
 
 - **Fixture.** The Bliss copy of the Gettysburg Address, public domain, rendered with
   `say -v Samantha -f gettysburg.txt -o gettysburg.aiff` and encoded with
@@ -696,10 +701,18 @@ version of that alt text shipped the numbers from the run before the one on disk
   1920×1080 panel the layout was tuned for, with the menu bar and Dock showing (`availHeight`
   960, less 121 px of tab strip, toolbar and bookmarks bar). Measured, not derived — an earlier
   draft of this note summed 1080 − 121 − 25 and got a number that matched nothing. Sidebar open.
-- **Capture.** Playwright driving the app — already running with `--server.headless true` — in
-  headless Chromium: `uv run --no-project --with playwright python <script>`, never a project
-  dependency, since ty would report the import unresolved and nothing here imports it.
-  `set_input_files` on the uploader, click Transcribe, then wait for three `stMetric` elements
+- **Capture.** `uv run --no-project docs/screenshots.py`, with the app already running under
+  `--server.headless true`. Playwright comes from the script's inline metadata, never from
+  `pyproject.toml`: nothing here imports it, so it would be a dependency for one file that CI
+  never runs. `--no-project` is not decoration — a bare `uv run` re-locks the project when
+  `uv.lock` is stale, the hazard `preflight.sh` names. The import carries
+  `# ty: ignore[unresolved-import]` because `uvx ty check .` resolves against the project
+  environment, where Playwright is absent; `unused-ignore-comment` reports the directive the day
+  that stops being so. First run needs `playwright install chromium-headless-shell` once, ~95 MB
+  into `~/Library/Caches/ms-playwright`, or `--browser` pointing at any chrome-headless-shell.
+  The script synthesizes the fixture from the text it embeds, so nothing else has to exist;
+  `--fixture` reuses an mp3. Then `set_input_files` on the uploader, click Transcribe, wait for
+  three `stMetric` elements
   and fail fast on the three error labels — "RTFx" is only in the Speed tooltip, so waiting on
   it hangs. Before every shot: wait for `stStatusWidget` to detach, blur `activeElement`, and
   park the mouse in empty main-area background; otherwise Transcribe is captured in its hover
