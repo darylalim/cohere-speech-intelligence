@@ -1,5 +1,5 @@
 [project]
-name = "cohere-transcribe"
+name = "cohere-speech-intelligence"
 version = "0.1.0"
 description = "Streamlit application for transcription using Cohere Transcribe on Apple Silicon with MLX."
 license = "MIT"

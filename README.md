@@ -1,6 +1,6 @@
 # Cohere Transcribe
 
-[![CI](https://github.com/darylalim/cohere-transcribe/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/darylalim/cohere-transcribe/actions/workflows/ci.yml)
+[![CI](https://github.com/darylalim/cohere-speech-intelligence/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/darylalim/cohere-speech-intelligence/actions/workflows/ci.yml)
 
 Streamlit app for local speech to text on Apple Silicon. Audio never leaves the
 machine: the model runs on the GPU through MLX and
